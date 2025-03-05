@@ -49,38 +49,60 @@
           type="text"
           class="add-form-name"
           placeholder="Введите ваше имя"
+          id="name"
         />
         <textarea
           type="textarea"
           class="add-form-text"
           placeholder="Введите ваш коментарий"
+          id="comment"
           rows="4"
         ></textarea>
         <div class="add-form-row">
-          <button class="add-form-button">Написать</button>
+          <button class="add-form-button" id="button">Написать</button>
         </div>
       </div>
     </div>
   </body>
+<script>
+        const nameInput = document.getElementById('name');
+        const commentInput = document.getElementById('comment');
+        const addButton = document.getElementById('button');
+        const commentsList = document.querySelector('.comments');
 
-  <script>
-    "use strict";
-    // Код писать здесь
-    console.log("It works!");
-    
-    document.getElementById("Имя").addEventListener("input", function() {
-  // Здесь можно добавить код, который будет выполняться при изменении поля ввода "Имя"
-  console.log("Значение поля 'Имя' изменилось.");
-});
+        nameInput.addEventListener('input', updateCommentTemplate);
+        commentInput.addEventListener('input', updateCommentTemplate);
 
-document.getElementById("Комментарий").addEventListener("input", function() {
-  // Здесь можно добавить код, который будет выполняться при изменении поля ввода "Комментарий"
-  console.log("Значение поля 'Комментарий' изменилось.");
-});
+        addButton.addEventListener('click', addComment);
 
-document.getElementById("addButton").addEventListener("click", function() {
-  // Здесь можно добавить код, который будет выполняться при нажатии на кнопку "Добавить"
-  console.log("Кнопка 'Добавить' нажата.");
-});
-  </script>
+        function updateCommentTemplate() {
+        }
+
+        function addComment() {
+            const newComment = `
+                <li class="comment">
+                    <div class="comment-header">
+                        <div>${nameInput.value}</div>
+                        <div>${new Date().toLocaleString()}</div>
+                    </div>
+                    <div class="comment-body">
+                        <div class="comment-text">
+                            ${commentInput.value}
+                        </div>
+                    </div>
+                    <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">0</span>
+              <button class="like-button -active-like"></button>
+            </div>
+          </div>
+                </li>
+            `;
+
+            commentsList.innerHTML += newComment;
+
+            nameInput.value = '';
+            commentInput.value = '';
+        }
+</script>
 </html>
