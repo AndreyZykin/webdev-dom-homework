@@ -69,40 +69,75 @@
         const commentInput = document.getElementById('comment');
         const addButton = document.getElementById('button');
         const commentsList = document.querySelector('.comments');
+      
+        addButton.addEventListener('click', function addComment() {
+    const name = nameInput.value.trim();
+    const comment = commentInput.value.trim();
 
-        nameInput.addEventListener('input', updateCommentTemplate);
-        commentInput.addEventListener('input', updateCommentTemplate);
+   
+    if (!name) {
+        alert('Пожалуйста, введите Ваше имя.');
+        return;
+    }
+    if (!comment) {
+        alert('Пожалуйста, введите текст комментария.');
+        return;
+    }
 
-        addButton.addEventListener('click', addComment);
+    const currentDate = new Date().toLocaleString();
 
-        function updateCommentTemplate() {
-        }
-
-        function addComment() {
-            const newComment = `
-                <li class="comment">
-                    <div class="comment-header">
-                        <div>${nameInput.value}</div>
-                        <div>${new Date().toLocaleString()}</div>
-                    </div>
-                    <div class="comment-body">
-                        <div class="comment-text">
-                            ${commentInput.value}
-                        </div>
-                    </div>
-                    <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">0</span>
-              <button class="like-button"></button>
+    // Добавление комментария в список
+    commentsList.innerHTML += `
+        <li class="comment">
+            <div class="comment-header">
+                <div>${escapeHTML(name)}</div>
+                <div>${currentDate}</div>
             </div>
-          </div>
-                </li>
-            `;
+            <div class="comment-body">
+                <div class="comment-text">${escapeHTML(comment)}</div>
+            </div>
+            <div class="comment-footer">
+                <div class="likes">
+                    <span class="likes-counter">0</span>
+                    <button class="like-button"></button>
+                </div>
+            </div>
+        </li>
+    `;
 
-            commentsList.innerHTML += newComment;
+    
+    nameInput.value = '';
+    commentInput.value = '';
 
-            nameInput.value = '';
-            commentInput.value = '';
+    // Добавление обработчика на лайк
+    const lastComment = commentsList.lastElementChild;
+    const likeButton = lastComment.querySelector('.like-button');
+    const likesCounter = lastComment.querySelector('.likes-counter');
+    let liked = false;
+
+    likeButton.addEventListener('click', function () {
+        if (!liked) {
+            likesCounter.textContent = +likesCounter.textContent + 1;
+            likeButton.classList.add('liked');
+            liked = true;
+        } else {
+            likesCounter.textContent = +likesCounter.textContent - 1;
+            likeButton.classList.remove('liked');
+            liked = false;
         }
+    });
+});
+
+
+function escapeHTML(str) {
+    return str.replace(/[&<>"']/g, (m) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[m]);
+}
+
 </script>
 </html>
