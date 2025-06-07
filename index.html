@@ -49,38 +49,95 @@
           type="text"
           class="add-form-name"
           placeholder="Введите ваше имя"
+          id="name"
         />
         <textarea
           type="textarea"
           class="add-form-text"
           placeholder="Введите ваш коментарий"
+          id="comment"
           rows="4"
         ></textarea>
         <div class="add-form-row">
-          <button class="add-form-button">Написать</button>
+          <button class="add-form-button" id="button">Написать</button>
         </div>
       </div>
     </div>
   </body>
+<script>
+        const nameInput = document.getElementById('name');
+        const commentInput = document.getElementById('comment');
+        const addButton = document.getElementById('button');
+        const commentsList = document.querySelector('.comments');
+      
+        addButton.addEventListener('click', function addComment() {
+    const name = nameInput.value.trim();
+    const comment = commentInput.value.trim();
 
-  <script>
-    "use strict";
-    // Код писать здесь
-    console.log("It works!");
+   
+    if (!name) {
+        alert('Пожалуйста, введите Ваше имя.');
+        return;
+    }
+    if (!comment) {
+        alert('Пожалуйста, введите текст комментария.');
+        return;
+    }
+
+    const currentDate = new Date().toLocaleString();
+
+    // Добавление комментария в список
+    commentsList.innerHTML += `
+        <li class="comment">
+            <div class="comment-header">
+                <div>${escapeHTML(name)}</div>
+                <div>${currentDate}</div>
+            </div>
+            <div class="comment-body">
+                <div class="comment-text">${escapeHTML(comment)}</div>
+            </div>
+            <div class="comment-footer">
+                <div class="likes">
+                    <span class="likes-counter">0</span>
+                    <button class="like-button"></button>
+                </div>
+            </div>
+        </li>
+    `;
+
     
-    document.getElementById("Имя").addEventListener("input", function() {
-  // Здесь можно добавить код, который будет выполняться при изменении поля ввода "Имя"
-  console.log("Значение поля 'Имя' изменилось.");
+    nameInput.value = '';
+    commentInput.value = '';
+
+    // Добавление обработчика на лайк
+    const lastComment = commentsList.lastElementChild;
+    const likeButton = lastComment.querySelector('.like-button');
+    const likesCounter = lastComment.querySelector('.likes-counter');
+    let liked = false;
+
+    likeButton.addEventListener('click', function () {
+        if (!liked) {
+            likesCounter.textContent = +likesCounter.textContent + 1;
+            likeButton.classList.add('liked');
+            liked = true;
+        } else {
+            likesCounter.textContent = +likesCounter.textContent - 1;
+            likeButton.classList.remove('liked');
+            liked = false;
+        }
+    });
 });
 
-document.getElementById("Комментарий").addEventListener("input", function() {
-  // Здесь можно добавить код, который будет выполняться при изменении поля ввода "Комментарий"
-  console.log("Значение поля 'Комментарий' изменилось.");
-});
 
-document.getElementById("addButton").addEventListener("click", function() {
-  // Здесь можно добавить код, который будет выполняться при нажатии на кнопку "Добавить"
-  console.log("Кнопка 'Добавить' нажата.");
-});
-  </script>
+function escapeHTML(str) {
+    return str.replace(/[&<>"']/g, (m) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[m]);
+}
+
+</script>
 </html>
