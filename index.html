@@ -29,7 +29,7 @@
     </div>
 </body>
 <script>
-    // Изначальные комментарии добавляем в массив
+      // Стейт всех комментариев:
     const comments = [
         {
             name: "Глеб Фокин",
@@ -54,8 +54,8 @@
 
     // Добавляем комментарий
     addButton.addEventListener('click', function () {
-        const name = escapeHTML(nameInput.value.trim());
-        const text = escapeHTML(commentInput.value.trim());
+        const name = nameInput.value.trim();
+        const text = commentInput.value.trim();
 
         if (!name) {
             alert('Пожалуйста, введите Ваше имя.');
@@ -67,8 +67,8 @@
         }
 
         comments.push({
-            name: name,
-            text: text,
+            name: escapeHTML(name),
+            text: escapeHTML(text),
             date: new Date().toLocaleString(),
             likes: 0,
             isLiked: false,
@@ -85,7 +85,7 @@
     // Рендерим все комментарии
     function renderComments() {
         commentsList.innerHTML = comments.map((comment, index) => `
-            <li class="comment" data-index="${index}">
+            <li class="comment">
                 <div class="comment-header">
                     <div>${comment.name}</div>
                     <div>${comment.date}</div>
@@ -96,7 +96,7 @@
                 <div class="comment-footer">
                     <div class="likes">
                         <span class="likes-counter">${comment.likes}</span>
-                        <button class="like-button${comment.isLiked ? ' -active-like' : ''}"></button>
+                        <button class="like-button${comment.isLiked ? ' -active-like' : ''}" data-index="${index}"></button>
                     </div>
                 </div>
             </li>
@@ -104,9 +104,8 @@
 
         // После рендера навешиваем обработчики на кнопки
         document.querySelectorAll('.like-button').forEach(btn => {
-            btn.addEventListener('click', function (event) {
-                event.stopPropagation(); // Остановить всплытие события
-                const index = Array.from(btn.closest('ul').children).indexOf(btn.closest('li'));
+            btn.addEventListener('click', function () {
+                const index = this.dataset.index;
                 // Инвертируем isLiked и изменяем likes
                 if (!comments[index].isLiked) {
                     comments[index].likes += 1;
@@ -118,22 +117,11 @@
                 renderComments();
             });
         });
-
-        // Добавляем обработчик клика на комментарии для ответа
-        document.querySelectorAll('.comment').forEach(commentElement => {
-            commentElement.addEventListener('click', function () {
-                const index = this.dataset.index;
-                const comment = comments[index];
-                nameInput.value = comment.name;
-                commentInput.value = `> ${comment.text}\n`; // Добавляем символ ">" перед текстом
-                commentInput.focus();
-            });
-        });
     }
 
     // Экранирование html-спецсимволов
     function escapeHTML(str) {
-        return str.replaceAll(/[&<>"']/g, (m) => ({
+        return str.replace(/[&<>"']/g, (m) => ({
             '&': '&amp;',
             '<': '&lt;',
             '>': '&gt;',
