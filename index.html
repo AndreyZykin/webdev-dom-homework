@@ -7,42 +7,7 @@
 </head>
 <body>
     <div class="container">
-        <ul class="comments">
-            <li class="comment">
-                <div class="comment-header">
-                    <div>Глеб Фокин</div>
-                    <div>12.02.22 12:18</div>
-                </div>
-                <div class="comment-body">
-                    <div class="comment-text">
-                        Это будет первый комментарий на этой странице
-                    </div>
-                </div>
-                <div class="comment-footer">
-                    <div class="likes">
-                        <span class="likes-counter">3</span>
-                        <button class="like-button"></button>
-                    </div>
-                </div>
-            </li>
-            <li class="comment">
-                <div class="comment-header">
-                    <div>Варвара Н.</div>
-                    <div>13.02.22 19:22</div>
-                </div>
-                <div class="comment-body">
-                    <div class="comment-text">
-                        Мне нравится как оформлена эта страница! ❤
-                    </div>
-                </div>
-                <div class="comment-footer">
-                    <div class="likes">
-                        <span class="likes-counter">75</span>
-                        <button class="like-button -active-like"></button>
-                    </div>
-                </div>
-            </li>
-        </ul>
+        <ul class="comments"></ul>
         <div class="add-form">
             <input
                 type="text"
@@ -64,7 +29,7 @@
     </div>
 </body>
 <script>
-    // Стейт всех комментариев:
+    // Изначальные комментарии добавляем в массив
     const comments = [
         {
             name: "Глеб Фокин",
@@ -89,8 +54,8 @@
 
     // Добавляем комментарий
     addButton.addEventListener('click', function () {
-        const name = nameInput.value.trim();
-        const text = commentInput.value.trim();
+        const name = escapeHTML(nameInput.value.trim());
+        const text = escapeHTML(commentInput.value.trim());
 
         if (!name) {
             alert('Пожалуйста, введите Ваше имя.');
@@ -102,8 +67,8 @@
         }
 
         comments.push({
-            name: escapeHTML(name),
-            text: escapeHTML(text),
+            name: name,
+            text: text,
             date: new Date().toLocaleString(),
             likes: 0,
             isLiked: false,
@@ -120,7 +85,7 @@
     // Рендерим все комментарии
     function renderComments() {
         commentsList.innerHTML = comments.map((comment, index) => `
-            <li class="comment">
+            <li class="comment" data-index="${index}">
                 <div class="comment-header">
                     <div>${comment.name}</div>
                     <div>${comment.date}</div>
@@ -131,7 +96,7 @@
                 <div class="comment-footer">
                     <div class="likes">
                         <span class="likes-counter">${comment.likes}</span>
-                        <button class="like-button${comment.isLiked ? ' -active-like' : ''}" data-index="${index}"></button>
+                        <button class="like-button${comment.isLiked ? ' -active-like' : ''}"></button>
                     </div>
                 </div>
             </li>
@@ -139,8 +104,9 @@
 
         // После рендера навешиваем обработчики на кнопки
         document.querySelectorAll('.like-button').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const index = this.dataset.index;
+            btn.addEventListener('click', function (event) {
+                event.stopPropagation(); // Остановить всплытие события
+                const index = Array.from(btn.closest('ul').children).indexOf(btn.closest('li'));
                 // Инвертируем isLiked и изменяем likes
                 if (!comments[index].isLiked) {
                     comments[index].likes += 1;
@@ -152,11 +118,22 @@
                 renderComments();
             });
         });
+
+        // Добавляем обработчик клика на комментарии для ответа
+        document.querySelectorAll('.comment').forEach(commentElement => {
+            commentElement.addEventListener('click', function () {
+                const index = this.dataset.index;
+                const comment = comments[index];
+                nameInput.value = comment.name;
+                commentInput.value = `> ${comment.text}\n`; // Добавляем символ ">" перед текстом
+                commentInput.focus();
+            });
+        });
     }
 
     // Экранирование html-спецсимволов
     function escapeHTML(str) {
-        return str.replace(/[&<>"']/g, (m) => ({
+        return str.replaceAll(/[&<>"']/g, (m) => ({
             '&': '&amp;',
             '<': '&lt;',
             '>': '&gt;',
