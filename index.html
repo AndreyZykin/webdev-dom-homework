@@ -115,7 +115,8 @@ function renderComments() {
 
     // После рендера навешиваем обработчики на кнопки
     document.querySelectorAll('.like-button').forEach(btn => {
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', function (event) {
+           event.stopPropagation(); 
             const index = this.dataset.index;
             // Инвертируем isLiked и изменяем likes
             if (!comments[index].isLiked) {
