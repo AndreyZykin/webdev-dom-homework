@@ -1,4 +1,3 @@
-   // Стейт всех комментариев:
     const comments = [
         {
             name: "Глеб Фокин",
@@ -21,7 +20,6 @@
     const addButton = document.getElementById('button');
     const commentsList = document.querySelector('.comments');
 
-   // Экранирование html-спецсимволов
 function escapeHTML(str) {
     return str.replace(/[&<>"']/g, (m) => ({
         '&': '&amp;',
@@ -32,7 +30,6 @@ function escapeHTML(str) {
     })[m]);
 }
 
-// Добавляем комментарий
 addButton.addEventListener('click', function () {
     const name = nameInput.value.trim();
     const text = commentInput.value.trim();
@@ -53,16 +50,11 @@ addButton.addEventListener('click', function () {
         likes: 0,
         isLiked: false,
     });
-
-    // После push сразу рендерим
     renderComments();
-
-    // Очищаем поля
     nameInput.value = '';
     commentInput.value = '';
 });
 
-// Рендерим все комментарии
 function renderComments() {
     commentsList.innerHTML = comments.map((comment, index) => `
         <li class="comment" data-index="${index}">
@@ -82,12 +74,10 @@ function renderComments() {
         </li>
     `).join('');
 
-    // После рендера навешиваем обработчики на кнопки
     document.querySelectorAll('.like-button').forEach(btn => {
         btn.addEventListener('click', function (event) {
            event.stopPropagation(); 
             const index = this.dataset.index;
-            // Инвертируем isLiked и изменяем likes
             if (!comments[index].isLiked) {
                 comments[index].likes += 1;
                 comments[index].isLiked = true;
@@ -99,17 +89,16 @@ function renderComments() {
         });
     });
 
-    // Добавляем обработчик клика на комментарии для ответа
     document.querySelectorAll('.comment').forEach(commentElement => {
         commentElement.addEventListener('click', function () {
             const index = this.dataset.index;
             const comment = comments[index];
             nameInput.value = comment.name;
-            commentInput.value = `> ${comment.text}\n`; // Добавляем символ ">" перед текстом
+            commentInput.value = `> ${comment.text}\n`;
             commentInput.focus();
         });
     });
 }
 
-// Инициализация рендеринга при загрузке страницы
+
 renderComments();
