@@ -1,3 +1,6 @@
+import { comments, addComment } from './comments.js';
+import { renderComments } from './renderComments.js';
+
 export function setupEventHandlers(nameInput, commentInput, addComment, commentsList) {
     const addButton = document.getElementById('button');
 
@@ -14,10 +17,10 @@ export function setupEventHandlers(nameInput, commentInput, addComment, comments
             return;
         }
 
-        addComment(name, text); // Добавляем комментарий
-        renderComments(comments, commentsList); // Рендерим комментарии
+        addComment(name, text); 
+        renderComments(comments, commentsList); 
 
-        // Очищаем поля
+        
         nameInput.value = '';
         commentInput.value = '';
     });
