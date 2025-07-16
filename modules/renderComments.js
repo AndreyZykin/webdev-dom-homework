@@ -2,7 +2,7 @@ export function renderComments(comments, commentsList) {
     commentsList.innerHTML = comments.map((comment, index) => `
         <li class="comment">
             <div class="comment-header">
-                <div>${comment.name}</div>
+                <div>${comment.author.name}</div>
                 <div>${comment.date}</div>
             </div>
             <div class="comment-body">
