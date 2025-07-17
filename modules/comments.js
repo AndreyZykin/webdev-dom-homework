@@ -25,6 +25,10 @@ export function addComment(name, text) {
     });
 }
 
+export const updateComments = (newComments) => {
+    comments = newComments
+}
+
 function escapeHTML(str) {
     return str.replace(/[&<>"']/g, (m) => ({
         '&': '&amp;',
