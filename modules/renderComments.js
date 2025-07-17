@@ -17,11 +17,9 @@ export function renderComments(comments, commentsList) {
         </li>
     `).join('');
 
-    // После рендера навешиваем обработчики на кнопки
     document.querySelectorAll('.like-button').forEach(btn => {
         btn.addEventListener('click', function () {
             const index = this.dataset.index;
-            // Инвертируем isLiked и изменяем likes
             if (!comments[index].isLiked) {
                 comments[index].likes += 1;
                 comments[index].isLiked = true;
