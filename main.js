@@ -52,7 +52,7 @@ function addComment(name, text) {
   .then(result => {
     if (result.success) {
       const newComment = {
-        name,
+        author: { name },
         text,
         date: new Date().toISOString().slice(0,10),
         likes: 0,
