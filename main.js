@@ -6,30 +6,47 @@ const commentsList = document.querySelector('.comments');
 const nameInput = document.getElementById('name');
 const commentInput = document.getElementById('comment');
 
-function newComments(commentsArray) {
-    comments.length = 0;
-    comments.push(...commentsArray);
+let isLoadingComments = false; 
+let isAddingComment = false;  
+
+function showLoader() {
+  document.querySelector('.loader').style.display = 'block';
 }
 
-fetch("https://wedev-api.sky.pro/api/v1/:andrey-zykin/comments").then(response => {
-    return response.json()
-}).then(data => {
-    newComments(data.comments)
-    renderComments(comments, commentsList);
-})
+function hideLoader() {
+  document.querySelector('.loader').style.display = 'none';
+}
 
+showLoader();
+fetch("https://wedev-api.sky.pro/api/v1/:andrey-zykin")
+  .then(response => response.json())
+  .then(data => {
+    newComments(data.comments);
+    renderComments(comments, commentsList);
+  })
+  .catch(error => {
+    console.error('Ошибка при загрузке комментариев:', error);
+  })
+  .finally(() => {
+    hideLoader();
+  });
 
 setupEventHandlers(nameInput, commentInput, addComment, comments, commentsList);
 
 function addComment(name, text) {
+  if (isAddingComment) return; 
+  isAddingComment = true;
+  showLoader();
+
   const personalKey = 'andrey-zykin';
   const url = `https://wedev-api.sky.pro/api/v1/${personalKey}/comments`;
-
   const bodyData = JSON.stringify({ name, text });
-  console.log('Отправляем данные:', bodyData);
 
   return fetch(url, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
     body: bodyData,
   })
   .then(res => {
@@ -51,15 +68,40 @@ function addComment(name, text) {
   })
   .then(result => {
     if (result.success) {
-      const newComment = {
-        name,
-        text,
-        date: new Date().toISOString().slice(0,10),
-        likes: 0,
-        isLiked: false,
-      };
-      comments.push(newComment);
+      return fetchComments();
+    }
+  })
+  .then(data => {
+    if (data) {
+      newComments(data.comments);
       renderComments(comments, commentsList);
     }
+  })
+  .catch(error => {
+    console.error('Ошибка при добавлении комментария:', error);
+  })
+  .finally(() => {
+    hideLoader();
+    enableAddButton();
+    isAddingComment = false;
+    commentInput.value = '';
   });
+}
+
+function fetchComments() {
+  return fetch("https://wedev-api.sky.pro/api/v1/:andrey-zykin/comments")
+    .then(response => response.json());
+}
+
+function newComments(commentsArray) {
+  comments.length = 0; 
+  commentsArray.forEach(comment => comments.push(comment));
+}
+
+function disableAddButton() {
+  document.querySelector('#addButton').disabled = true;
+}
+
+function enableAddButton() {
+  document.querySelector('#addButton').disabled = false;
 }
