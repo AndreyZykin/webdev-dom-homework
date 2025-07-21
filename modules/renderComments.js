@@ -2,7 +2,7 @@ export function renderComments(comments, commentsList) {
     commentsList.innerHTML = comments.map((comment, index) => `
         <li class="comment">
             <div class="comment-header">
-                <div>${comment.name}</div>
+               <div>${comment.author ? comment.author.name : 'Аноним'}</div>
                 <div>${comment.date}</div>
             </div>
             <div class="comment-body">
@@ -17,11 +17,9 @@ export function renderComments(comments, commentsList) {
         </li>
     `).join('');
 
-    // После рендера навешиваем обработчики на кнопки
     document.querySelectorAll('.like-button').forEach(btn => {
         btn.addEventListener('click', function () {
             const index = this.dataset.index;
-            // Инвертируем isLiked и изменяем likes
             if (!comments[index].isLiked) {
                 comments[index].likes += 1;
                 comments[index].isLiked = true;
