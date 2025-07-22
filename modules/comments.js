@@ -23,6 +23,24 @@ export function addComment(name, text) {
         likes: 0,
         isLiked: false,
     });
+    async function handleAddComment() {
+  const name = nameInput.value.trim();
+  const text = commentInput.value.trim();
+
+  if (!name || !text) {
+    alert('Пожалуйста, заполните оба поля');
+    return;
+  }
+
+  const result = await addComment(name, text);
+  
+  if (result.success) {
+    await loadComments();
+    
+    nameInput.value = '';
+    commentInput.value = '';
+  }
+}
 }
 
 export const updateComments = (newComments) => {
