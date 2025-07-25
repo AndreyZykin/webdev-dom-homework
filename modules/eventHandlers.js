@@ -1,7 +1,7 @@
 import { comments, addComment } from './comments.js';
 import { renderComments } from './renderComments.js';
 
-export function setupEventHandlers(nameInput, commentInput, addComment, commentsList) {
+export function setupEventHandlers(nameInput, commentInput, addCommentFn, comments, commentsList) {
     const addButton = document.getElementById('button');
 
     addButton.addEventListener('click', function () {
@@ -17,11 +17,15 @@ export function setupEventHandlers(nameInput, commentInput, addComment, comments
             return;
         }
 
-        addComment(name, text); 
-        renderComments(comments, commentsList); 
-
-        
-        nameInput.value = '';
-        commentInput.value = '';
+      addCommentFn(name, text)
+            .then(() => {
+                renderComments(comments, commentsList);
+                nameInput.value = '';
+                commentInput.value = '';
+            })
+            .catch((err) => {
+                console.error('Ошибка при добавлении:', err);
+                alert('Не удалось добавить комментарий');
+            });
     });
 }

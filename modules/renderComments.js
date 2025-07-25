@@ -1,9 +1,22 @@
 export function renderComments(comments, commentsList) {
-    commentsList.innerHTML = comments.map((comment, index) => `
+    commentsList.innerHTML = comments.map((comment, index) => {
+        // Форматируем дату в формате "ДД.ММ.ГГГГ, ЧЧ:ММ"
+        const formattedDate = new Date(comment.date)
+            .toLocaleDateString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            })
+            .replace(/\./g, '.')
+            .replace(/,/g, ', ');
+
+        return `
         <li class="comment">
             <div class="comment-header">
-                <div>${comment.name}</div>
-                <div>${comment.date}</div>
+                <div>${comment.author.name}</div>
+                <div>${formattedDate}</div>
             </div>
             <div class="comment-body">
                 <div class="comment-text">${comment.text}</div>
@@ -15,13 +28,13 @@ export function renderComments(comments, commentsList) {
                 </div>
             </div>
         </li>
-    `).join('');
+        `;
+    }).join('');
 
-    // После рендера навешиваем обработчики на кнопки
+
     document.querySelectorAll('.like-button').forEach(btn => {
         btn.addEventListener('click', function () {
             const index = this.dataset.index;
-            // Инвертируем isLiked и изменяем likes
             if (!comments[index].isLiked) {
                 comments[index].likes += 1;
                 comments[index].isLiked = true;
