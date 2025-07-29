@@ -1,4 +1,5 @@
-export const comments = [
+
+export let comments = [
     {
         name: "Глеб Фокин",
         text: "Это будет первый комментарий на этой странице",
@@ -16,36 +17,21 @@ export const comments = [
 ];
 
 export function addComment(name, text) {
-    comments.push({
+    const newComment = {
         name: escapeHTML(name),
         text: escapeHTML(text),
         date: new Date().toLocaleString(),
         likes: 0,
         isLiked: false,
-    });
-    async function handleAddComment() {
-  const name = nameInput.value.trim();
-  const text = commentInput.value.trim();
+    };
 
-  if (!name || !text) {
-    alert('Пожалуйста, заполните оба поля');
-    return;
-  }
-
-  const result = await addComment(name, text);
-  
-  if (result.success) {
-    await loadComments();
-    
-    nameInput.value = '';
-    commentInput.value = '';
-  }
-}
+    comments = [...comments, newComment];
+    return Promise.resolve({ success: true });
 }
 
 export const updateComments = (newComments) => {
-    comments = newComments
-}
+    comments = newComments;
+};
 
 function escapeHTML(str) {
     return str.replace(/[&<>"']/g, (m) => ({
