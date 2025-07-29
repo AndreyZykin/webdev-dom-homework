@@ -33,7 +33,7 @@ export const updateComments = (newComments) => {
     comments = newComments;
 };
 
-function escapeHTML(str) {
+export function escapeHTML(str) {
     return str.replace(/[&<>"']/g, (m) => ({
         '&': '&amp;',
         '<': '&lt;',

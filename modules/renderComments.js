@@ -1,6 +1,7 @@
+import { escapeHTML } from './comments.js';
+
 export function renderComments(comments, commentsList) {
     commentsList.innerHTML = comments.map((comment, index) => {
-        // Форматируем дату в формате "ДД.ММ.ГГГГ, ЧЧ:ММ"
         const formattedDate = new Date(comment.date)
             .toLocaleDateString('ru-RU', {
                 day: '2-digit',
@@ -15,11 +16,11 @@ export function renderComments(comments, commentsList) {
         return `
         <li class="comment">
             <div class="comment-header">
-                <div>${comment.author.name}</div>
+                <div>${escapeHTML(comment.author.name)}</div>
                 <div>${formattedDate}</div>
             </div>
             <div class="comment-body">
-                <div class="comment-text">${comment.text}</div>
+                <div class="comment-text">${escapeHTML(comment.text)}</div>
             </div>
             <div class="comment-footer">
                 <div class="likes">
@@ -27,10 +28,8 @@ export function renderComments(comments, commentsList) {
                     <button class="like-button${comment.isLiked ? ' -active-like' : ''}" data-index="${index}"></button>
                 </div>
             </div>
-        </li>
-        `;
+        </li>`;
     }).join('');
-
 
     document.querySelectorAll('.like-button').forEach(btn => {
         btn.addEventListener('click', function () {
