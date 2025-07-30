@@ -19,7 +19,8 @@ export async function addComment(name, text) {
   });
   
   if (res.status === 201) {
-    return { success: true };
+     const updatedComments = await getComments();
+    return { success: true, comments: updatedComments };
   } else if (res.status === 400) {
     const data = await res.json();
     alert(`Ошибка: ${data.error}`);

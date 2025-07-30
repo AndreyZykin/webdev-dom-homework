@@ -16,11 +16,10 @@ async function loadComments() {
     comments.push(...data); 
     renderComments(comments, commentsList);
   } catch (error) {
-    console.error(error);
+    console.error('Ошибка при загрузке комментариев:', error);
     alert('Не удалось загрузить комментарии');
   }
 }
-
 
 loadComments();
 
