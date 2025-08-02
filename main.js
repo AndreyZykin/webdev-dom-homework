@@ -10,15 +10,14 @@ let comments = [];
 
 
 async function loadComments() {
-  try {
-    const data = await getComments();
-    comments.length = 0; 
-    comments.push(...data); 
-    renderComments(comments, commentsList);
-  } catch (error) {
-    console.error('Ошибка при загрузке комментариев:', error);
-    alert('Не удалось загрузить комментарии');
-  }
+    try {
+        const data = await getComments();
+        comments.push(...data); 
+        renderComments(data, commentsList); 
+    } catch (error) {
+        console.error('Ошибка при загрузке комментариев:', error);
+        alert('Не удалось загрузить комментарии');
+    }
 }
 
 loadComments();
@@ -37,7 +36,8 @@ setupEventHandlers(nameInput, commentInput, async () => {
   
   if (result.success) {
    
-    await loadComments();
+    renderComments(result.comments, commentsList);
+    // await loadComments();
  
     nameInput.value = '';
     commentInput.value = '';
