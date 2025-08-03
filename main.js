@@ -1,45 +1,58 @@
 import { getComments, addComment } from './modules/api.js';
 import { renderComments } from './modules/renderComments.js';
-import { setupEventHandlers } from './modules/eventHandlers.js';
 
 const commentsList = document.querySelector('.comments');
 const nameInput = document.getElementById('name');
 const commentInput = document.getElementById('comment');
+const loadingIndicator = document.getElementById('loadingIndicator');
 
 let comments = [];
 
+// Функция для отображения лоадера
+function showLoader() {
+    loadingIndicator.style.display = 'block';
+}
 
+// Функция для скрытия лоадера
+function hideLoader() {
+    loadingIndicator.style.display = 'none';
+}
+
+// Функция для загрузки комментариев
 async function loadComments() {
+    showLoader();
     try {
         const data = await getComments();
-        comments.push(...data); 
-        renderComments(data, commentsList); 
+        comments.push(...data);
+        renderComments(data, commentsList);
     } catch (error) {
         console.error('Ошибка при загрузке комментариев:', error);
         alert('Не удалось загрузить комментарии');
+    } finally {
+        hideLoader();
     }
 }
 
+// Загрузка комментариев при старте приложения
 loadComments();
 
-setupEventHandlers(nameInput, commentInput, async () => {
-  const name = nameInput.value.trim();
-  const text = commentInput.value.trim();
+// Обработчик события для добавления комментария
+document.getElementById('button').addEventListener('click', async () => {
+    const name = nameInput.value.trim();
+    const text = commentInput.value.trim();
 
-  if (!name || !text) {
-    alert('Пожалуйста, заполните оба поля');
-    return;
-  }
+    if (!name || !text) {
+        alert('Пожалуйста, заполните оба поля');
+        return;
+    }
 
-  
-  const result = await addComment(name, text);
-  
-  if (result.success) {
-   
-    renderComments(result.comments, commentsList);
-    // await loadComments();
- 
-    nameInput.value = '';
-    commentInput.value = '';
-  }
-}, comments, commentsList);
+    showLoader();
+    const result = await addComment(name, text);
+    hideLoader();
+
+    if (result.success) {
+        renderComments(result.comments, commentsList);
+        nameInput.value = '';
+        commentInput.value = '';
+    }
+});

@@ -136,3 +136,10 @@ body {
     opacity: 0.9;
   }
 
+.loadingIndicator {
+    display: none; 
+    font-size: 28px;
+    color: #ffffff;
+    text-align: center;
+    margin: 20px 0;
+}
