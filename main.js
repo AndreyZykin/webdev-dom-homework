@@ -5,22 +5,35 @@ const commentsList = document.querySelector('.comments');
 const nameInput = document.getElementById('name');
 const commentInput = document.getElementById('comment');
 const loadingIndicator = document.getElementById('loadingIndicator');
+const commentLoadingIndicator = document.getElementById('commentLoadingIndicator');
+const submitButton = document.getElementById('button');
 
 let comments = [];
+let isLoading = false; // Флаг для отслеживания состояния загрузки
 
-// Функция для отображения лоадера
-function showLoader() {
+// Функция для отображения индикатора загрузки страницы
+function showPageLoader() {
     loadingIndicator.style.display = 'block';
 }
 
-// Функция для скрытия лоадера
-function hideLoader() {
+// Функция для скрытия индикатора загрузки страницы
+function hidePageLoader() {
     loadingIndicator.style.display = 'none';
+}
+
+// Функция для отображения индикатора загрузки комментария
+function showCommentLoader() {
+    commentLoadingIndicator.style.display = 'block';
+}
+
+// Функция для скрытия индикатора загрузки комментария
+function hideCommentLoader() {
+    commentLoadingIndicator.style.display = 'none';
 }
 
 // Функция для загрузки комментариев
 async function loadComments() {
-    showLoader();
+    showPageLoader(); // Показываем индикатор загрузки страницы
     try {
         const data = await getComments();
         comments.push(...data);
@@ -29,7 +42,7 @@ async function loadComments() {
         console.error('Ошибка при загрузке комментариев:', error);
         alert('Не удалось загрузить комментарии');
     } finally {
-        hideLoader();
+        hidePageLoader(); // Скрываем индикатор загрузки страницы
     }
 }
 
@@ -37,7 +50,9 @@ async function loadComments() {
 loadComments();
 
 // Обработчик события для добавления комментария
-document.getElementById('button').addEventListener('click', async () => {
+submitButton.addEventListener('click', async () => {
+    if (isLoading) return; // Если уже идет загрузка, ничего не делаем
+
     const name = nameInput.value.trim();
     const text = commentInput.value.trim();
 
@@ -46,12 +61,15 @@ document.getElementById('button').addEventListener('click', async () => {
         return;
     }
 
-    showLoader();
+    isLoading = true; // Устанавливаем флаг загрузки
+    showCommentLoader(); // Показываем индикатор загрузки комментария
+
     const result = await addComment(name, text);
-    hideLoader();
+    hideCommentLoader(); // Скрываем индикатор загрузки комментария
+    isLoading = false; // Сбрасываем флаг загрузки
 
     if (result.success) {
-        renderComments(result.comments, commentsList);
+        renderComments(result.comments, commentsList); // Обновляем комментарии
         nameInput.value = '';
         commentInput.value = '';
     }
