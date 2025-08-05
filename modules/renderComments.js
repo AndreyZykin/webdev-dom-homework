@@ -1,4 +1,5 @@
 import { escapeHTML } from './comments.js';
+import { delay } from '../main.js';
 
 export function renderComments(comments, commentsList) {
     commentsList.innerHTML = comments.map((comment, index) => {
@@ -25,22 +26,32 @@ export function renderComments(comments, commentsList) {
             <div class="comment-footer">
                 <div class="likes">
                     <span class="likes-counter">${comment.likes}</span>
-                    <button class="like-button${comment.isLiked ? ' -active-like' : ''}" data-index="${index}"></button>
+                    <button class="like-button${comment.isLiked ? ' -active-like' : ''}" data-index="${index}">
+                    </button>
                 </div>
             </div>
         </li>`;
     }).join('');
 
     document.querySelectorAll('.like-button').forEach(btn => {
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', async function () {
             const index = this.dataset.index;
-            if (!comments[index].isLiked) {
-                comments[index].likes += 1;
-                comments[index].isLiked = true;
-            } else {
-                comments[index].likes -= 1;
-                comments[index].isLiked = false;
-            }
+            const comment = comments[index];
+
+            // Добавляем класс для анимации
+            this.classList.add('-loading-like');
+
+            // Запускаем задержку
+            await delay(2000); // Задержка в 2 секунды
+
+            // Обновляем состояние лайка
+            comment.likes = comment.isLiked ? comment.likes - 1 : comment.likes + 1;
+            comment.isLiked = !comment.isLiked;
+
+            // Убираем класс анимации
+            this.classList.remove('-loading-like');
+
+            // Обновляем отображение комментариев
             renderComments(comments, commentsList);
         });
     });

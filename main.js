@@ -31,6 +31,15 @@ function hideCommentLoader() {
     commentLoadingIndicator.style.display = 'none';
 }
 
+// Функция delay
+export function delay(interval = 300) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve();
+        }, interval);
+    });
+}
+
 // Функция для загрузки комментариев
 async function loadComments() {
     showPageLoader(); // Показываем индикатор загрузки страницы
@@ -63,6 +72,9 @@ submitButton.addEventListener('click', async () => {
 
     isLoading = true; // Устанавливаем флаг загрузки
     showCommentLoader(); // Показываем индикатор загрузки комментария
+
+    // Имитация задержки перед добавлением комментария
+    await delay(2000); // Задержка в 2 секунды для имитации запроса к API
 
     const result = await addComment(name, text);
     hideCommentLoader(); // Скрываем индикатор загрузки комментария
