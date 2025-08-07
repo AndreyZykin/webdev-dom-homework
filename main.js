@@ -65,24 +65,32 @@ submitButton.addEventListener('click', async () => {
     const name = nameInput.value.trim();
     const text = commentInput.value.trim();
 
-    if (!name || !text) {
-        alert('Пожалуйста, заполните оба поля');
+    // Проверка длины имени и текста комментария
+    if (name.length < 3) {
+        alert('Имя должно содержать не менее 3 символов.');
+        return;
+    }
+    if (text.length < 5) {
+        alert('Комментарий должен содержать не менее 5 символов.');
         return;
     }
 
     isLoading = true; // Устанавливаем флаг загрузки
     showCommentLoader(); // Показываем индикатор загрузки комментария
 
-    // Имитация задержки перед добавлением комментария
-    await delay(2000); // Задержка в 2 секунды для имитации запроса к API
-
-    const result = await addComment(name, text);
-    hideCommentLoader(); // Скрываем индикатор загрузки комментария
-    isLoading = false; // Сбрасываем флаг загрузки
-
-    if (result.success) {
-        renderComments(result.comments, commentsList); // Обновляем комментарии
-        nameInput.value = '';
-        commentInput.value = '';
+    try {
+        const result = await addComment(name, text);
+        
+        if (result.success) {
+            renderComments(result.comments, commentsList); // Обновляем комментарии
+            nameInput.value = '';
+            commentInput.value = '';
+        }
+    } catch (error) {
+        console.error('Ошибка при добавлении комментария:', error);
+        alert('Проблема с интернет-соединением. Попробуйте позже.');
+    } finally {
+        hideCommentLoader(); // Скрываем индикатор загрузки комментария
+        isLoading = false; // Сбрасываем флаг загрузки
     }
 });
