@@ -1,11 +1,88 @@
-import { comments, addComment } from './modules/comments.js';
+import { getComments, addComment } from './modules/api.js';
 import { renderComments } from './modules/renderComments.js';
-import { setupEventHandlers } from './modules/eventHandlers.js';
 
+const commentsList = document.querySelector('.comments');
 const nameInput = document.getElementById('name');
 const commentInput = document.getElementById('comment');
-const commentsList = document.querySelector('.comments');
+const loadingIndicator = document.getElementById('loadingIndicator');
+const commentLoadingIndicator = document.getElementById('commentLoadingIndicator');
+const submitButton = document.getElementById('button');
 
-renderComments(comments, commentsList);
+let comments = [];
+let isLoading = false; // Флаг для отслеживания состояния загрузки
 
-setupEventHandlers(nameInput, commentInput, addComment, commentsList);
+// Функция для отображения индикатора загрузки страницы
+function showPageLoader() {
+    loadingIndicator.style.display = 'block';
+}
+
+// Функция для скрытия индикатора загрузки страницы
+function hidePageLoader() {
+    loadingIndicator.style.display = 'none';
+}
+
+// Функция для отображения индикатора загрузки комментария
+function showCommentLoader() {
+    commentLoadingIndicator.style.display = 'block';
+}
+
+// Функция для скрытия индикатора загрузки комментария
+function hideCommentLoader() {
+    commentLoadingIndicator.style.display = 'none';
+}
+
+// Функция delay
+export function delay(interval = 300) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve();
+        }, interval);
+    });
+}
+
+// Функция для загрузки комментариев
+async function loadComments() {
+    showPageLoader(); // Показываем индикатор загрузки страницы
+    try {
+        const data = await getComments();
+        comments.push(...data);
+        renderComments(data, commentsList);
+    } catch (error) {
+        console.error('Ошибка при загрузке комментариев:', error);
+        alert('Не удалось загрузить комментарии');
+    } finally {
+        hidePageLoader(); // Скрываем индикатор загрузки страницы
+    }
+}
+
+// Загрузка комментариев при старте приложения
+loadComments();
+
+// Обработчик события для добавления комментария
+submitButton.addEventListener('click', async () => {
+    if (isLoading) return; // Если уже идет загрузка, ничего не делаем
+
+    const name = nameInput.value.trim();
+    const text = commentInput.value.trim();
+
+    if (!name || !text) {
+        alert('Пожалуйста, заполните оба поля');
+        return;
+    }
+
+    isLoading = true; // Устанавливаем флаг загрузки
+    showCommentLoader(); // Показываем индикатор загрузки комментария
+
+    // Имитация задержки перед добавлением комментария
+    await delay(2000); // Задержка в 2 секунды для имитации запроса к API
+
+    const result = await addComment(name, text);
+    hideCommentLoader(); // Скрываем индикатор загрузки комментария
+    isLoading = false; // Сбрасываем флаг загрузки
+
+    if (result.success) {
+        renderComments(result.comments, commentsList); // Обновляем комментарии
+        nameInput.value = '';
+        commentInput.value = '';
+    }
+});

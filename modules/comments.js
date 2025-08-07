@@ -1,4 +1,5 @@
-export const comments = [
+
+export let comments = [
     {
         name: "Глеб Фокин",
         text: "Это будет первый комментарий на этой странице",
@@ -16,16 +17,23 @@ export const comments = [
 ];
 
 export function addComment(name, text) {
-    comments.push({
+    const newComment = {
         name: escapeHTML(name),
         text: escapeHTML(text),
         date: new Date().toLocaleString(),
         likes: 0,
         isLiked: false,
-    });
+    };
+
+    comments = [...comments, newComment];
+    return Promise.resolve({ success: true });
 }
 
-function escapeHTML(str) {
+export const updateComments = (newComments) => {
+    comments = newComments;
+};
+
+export function escapeHTML(str) {
     return str.replace(/[&<>"']/g, (m) => ({
         '&': '&amp;',
         '<': '&lt;',
