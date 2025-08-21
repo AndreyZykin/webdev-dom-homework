@@ -7,9 +7,13 @@ const commentInput = document.getElementById('comment');
 const loadingIndicator = document.getElementById('loadingIndicator');
 const commentLoadingIndicator = document.getElementById('commentLoadingIndicator');
 const submitButton = document.getElementById('button');
+const loginButton = document.getElementById('loginButton');
+const loginForm = document.getElementById('loginForm');
+const addForm = document.getElementById('addForm');
 
 let comments = [];
-let isLoading = false; // Флаг для отслеживания состояния загрузки
+let isLoading = false;
+let token = null;
 
 // Функция для отображения индикатора загрузки страницы
 function showPageLoader() {
@@ -42,7 +46,7 @@ export function delay(interval = 300) {
 
 // Функция для загрузки комментариев
 async function loadComments() {
-    showPageLoader(); // Показываем индикатор загрузки страницы
+    showPageLoader();
     try {
         const data = await getComments();
         comments.push(...data);
@@ -51,38 +55,50 @@ async function loadComments() {
         console.error('Ошибка при загрузке комментариев:', error);
         alert('Не удалось загрузить комментарии');
     } finally {
-        hidePageLoader(); // Скрываем индикатор загрузки страницы
+        hidePageLoader();
     }
 }
 
-// Загрузка комментариев при старте приложения
-loadComments();
+// Обработчик события для авторизации
+loginButton.addEventListener('click', async () => {
+    const username = document.getElementById('login').value;
+    const password = document.getElementById('password').value;
+
+    // Проверка логина и пароля
+    if (username === 'admin' && password === 'admin') {
+        alert('Вы успешно авторизованы!');
+        loginForm.style.display = 'none'; // Скрываем форму входа
+        addForm.style.display = 'block'; // Показываем форму добавления комментариев
+        await loadComments(); // Загружаем комментарии
+    } else {
+        alert('Неправильный логин или пароль. Попробуйте снова.');
+    }
+});
 
 // Обработчик события для добавления комментария
 submitButton.addEventListener('click', async () => {
-    if (isLoading) return; // Если уже идет загрузка, ничего не делаем
+    if (isLoading) return;
 
-    const name = nameInput.value.trim();
     const text = commentInput.value.trim();
 
-    if (!name || !text) {
-        alert('Пожалуйста, заполните оба поля');
+    // Проверка длины текста комментария
+    if (text.length < 3) {
+        alert('Комментарий должен содержать не менее 3 символов.');
         return;
     }
 
-    isLoading = true; // Устанавливаем флаг загрузки
-    showCommentLoader(); // Показываем индикатор загрузки комментария
+    isLoading = true;
+    showCommentLoader();
 
     // Имитация задержки перед добавлением комментария
     await delay(2000); // Задержка в 2 секунды для имитации запроса к API
 
-    const result = await addComment(name, text);
-    hideCommentLoader(); // Скрываем индикатор загрузки комментария
-    isLoading = false; // Сбрасываем флаг загрузки
+    const result = await addComment(token, text);
+    hideCommentLoader();
+    isLoading = false;
 
     if (result.success) {
-        renderComments(result.comments, commentsList); // Обновляем комментарии
-        nameInput.value = '';
-        commentInput.value = '';
+        renderComments(await getComments(), commentsList); // Обновляем комментарии
+        commentInput.value = ''; // Очищаем поле ввода
     }
 });

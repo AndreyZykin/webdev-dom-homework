@@ -8,8 +8,14 @@
 <body>
     <div class="container">
         <div id="loadingIndicator" style="display: none;">Загрузка...</div>
+       
         <ul class="comments"></ul>
-        <div class="add-form">
+   <div id="loginForm">
+    <input type="text" id="login" placeholder="Логин" />
+    <input type="password" id="password" placeholder="Пароль" />
+    <button id="loginButton">Войти</button>
+</div>
+<div class="add-form" style="display: none;" id="addForm">
             <input
                 type="text"
                 class="add-form-name"
