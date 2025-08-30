@@ -4,9 +4,7 @@ let token = null;
 export async function login(username, password) {
     const response = await fetch('https://wedev-api.sky.pro/api/user/login', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+       
         body: JSON.stringify({ login: username, password }), // Передаем логин и пароль
     });
 
@@ -30,15 +28,15 @@ export async function getComments() {
     return data.comments; 
 }
 
-export async function addComment(token, text) {
+export async function addComment(token, name, text) {
     const url = `https://wedev-api.sky.pro/api/v2/${personalKey}/comments`;
-    const bodyData = JSON.stringify({ text });
+    const bodyData = JSON.stringify({ author: { name }, text }); // Передаем имя и текст комментария
 
     const res = await fetch(url, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, // Убедитесь, что токен передается правильно        
+            // Удаляем заголовок Content-Type
         },
         body: bodyData,
     });

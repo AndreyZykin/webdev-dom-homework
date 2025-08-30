@@ -1,4 +1,4 @@
-import { getComments, addComment } from './modules/api.js';
+import { getComments, addComment, login } from './modules/api.js';
 import { renderComments } from './modules/renderComments.js';
 
 const commentsList = document.querySelector('.comments');
@@ -64,8 +64,9 @@ loginButton.addEventListener('click', async () => {
     const username = document.getElementById('login').value;
     const password = document.getElementById('password').value;
 
-    // Проверка логина и пароля
-    if (username === 'admin' && password === 'admin') {
+    const loginResult = await login(username, password);
+    if (loginResult && loginResult.success) {
+        token = loginResult.token; // Сохраняем токен
         alert('Вы успешно авторизованы!');
         loginForm.style.display = 'none'; // Скрываем форму входа
         addForm.style.display = 'flex'; // Показываем форму добавления комментариев
@@ -80,6 +81,7 @@ submitButton.addEventListener('click', async () => {
     if (isLoading) return;
 
     const text = commentInput.value.trim();
+    const name = nameInput.value.trim();
 
     // Проверка длины текста комментария
     if (text.length < 3) {
@@ -93,12 +95,13 @@ submitButton.addEventListener('click', async () => {
     // Имитация задержки перед добавлением комментария
     await delay(2000); // Задержка в 2 секунды для имитации запроса к API
 
-    const result = await addComment(token, text);
+    const result = await addComment(token, name, text); // Передаем токен, имя и текст
     hideCommentLoader();
     isLoading = false;
 
     if (result.success) {
         renderComments(await getComments(), commentsList); // Обновляем комментарии
         commentInput.value = ''; // Очищаем поле ввода
+        nameInput.value = ''; // Очищаем поле имени
     }
 });
