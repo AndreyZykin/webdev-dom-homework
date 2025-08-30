@@ -68,7 +68,7 @@ loginButton.addEventListener('click', async () => {
     if (username === 'admin' && password === 'admin') {
         alert('Вы успешно авторизованы!');
         loginForm.style.display = 'none'; // Скрываем форму входа
-        addForm.style.display = 'block'; // Показываем форму добавления комментариев
+        addForm.style.display = 'flex'; // Показываем форму добавления комментариев
         await loadComments(); // Загружаем комментарии
     } else {
         alert('Неправильный логин или пароль. Попробуйте снова.');
